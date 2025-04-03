@@ -1,0 +1,109 @@
+name: Traffic workflow
+
+on:
+  schedule:
+    - cron:  '8 8 * * *'
+
+jobs:
+  fetch_traffic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with: { ref: schedule-traffic-workflow }
+      - name: Fetch clones data
+        run: |
+          clones_file="$GITHUB_WORKSPACE/traffic/clones.json"
+          github_api_url="https://api.github.com/repos/${{ github.repository }}/traffic/clones"
+          github_token="${{ secrets.TRAFFIC_API }}"
+
+          traffic_content=$(curl --request GET \
+                             --url "$github_api_url" \
+                             --header "X-GitHub-Api-Version:2022-11-28" \
+                             --header "authorization: Bearer $github_token" \
+                             --header 'content-type: application/json')
+
+          echo "$traffic_content" > clones_traffic_response.json
+          jq '.clones |= map({dailyUniques: .uniques, date: (.timestamp | split("T")[0]), count}) | del(.uniques) | .count = (.clones | map(.count) | add)' clones_traffic_response.json > temp_clones_traffic.json && rm clones_traffic_response.json
+          cat temp_clones_traffic.json
+          jq --slurp '.[0].clones as $existing | .[1].clones as $new | .[0] | .clones = ((($existing + $new) | group_by(.date) | map(if length > 1 then if .[0].count < .[1].count then .[1] else .[0] end else .[0] end)) // []) | .count = (.clones | map(.count) | add)' "$clones_file" temp_clones_traffic.json > temp_clones.json
+          cat temp_clones.json > "$clones_file" && rm temp_clones.json temp_clones_traffic.json
+      - name: Fetch views data
+        run: |
+          views_file="$GITHUB_WORKSPACE/traffic/views.json"
+          github_api_url="https://api.github.com/repos/${{ github.repository }}/traffic/views"
+          github_token="${{ secrets.TRAFFIC_API }}"
+
+          traffic_content=$(curl --request GET \
+                              --url "$github_api_url" \
+                              --header "X-GitHub-Api-Version:2022-11-28" \
+                              --header "authorization: Bearer $github_token" \
+                              --header 'content-type: application/json')
+
+          echo "$traffic_content" > views_traffic_response.json
+          jq '.views |= map({dailyUniques: .uniques, date: (.timestamp | split("T")[0]), count}) | del(.uniques) | .count = (.views | map(.count) | add)' views_traffic_response.json > temp_views_traffic.json && rm views_traffic_response.json
+          cat temp_views_traffic.json
+          jq --slurp '.[0].views as $existing | .[1].views as $new | .[0] | .views = ((($existing + $new) | group_by(.date) | map(if length > 1 then if .[0].count < .[1].count then .[1] else .[0] end else .[0] end)) // []) | .count = (.views | map(.count) | add)' "$views_file" temp_views_traffic.json > temp_views.json
+          cat temp_views.json > "$views_file" && rm temp_views.json temp_views_traffic.json
+      - name: Fetch paths data
+        run: |
+          paths_file="$GITHUB_WORKSPACE/traffic/paths.json"
+          github_api_url="https://api.github.com/repos/${{ github.repository }}/traffic/popular/paths"
+          github_token="${{ secrets.TRAFFIC_API }}"
+
+          traffic_content=$(curl --request GET \
+                              --url "$github_api_url" \
+                              --header "X-GitHub-Api-Version:2022-11-28" \
+                              --header "authorization: Bearer $github_token" \
+                              --header 'content-type: application/json')
+          
+          echo "$traffic_content" > paths_traffic_response.json
+          current_date=$(date +"%Y-%m-%d")
+          jq --arg request_date "$current_date" '.[] |= . + {request_date: $request_date}' paths_traffic_response.json > temp_paths_traffic_response.json && rm paths_traffic_response.json
+          jq 'group_by(.path) | map({ path: .[0].path, title: .[0].title, views: map({count, uniques, request_date}) })' temp_paths_traffic_response.json > temp_paths_traffic.json && rm temp_paths_traffic_response.json
+          cat temp_paths_traffic.json
+          jq -s 'flatten | group_by(.path) | map({path: .[0].path, title: .[0].title, views: [.[].views[]] | unique_by(.request_date) | group_by(.request_date) | map(add)}) | unique_by(.path)' "$paths_file" temp_paths_traffic.json > temp_merged_paths_file.json
+          cat temp_merged_paths_file.json > "$paths_file" && rm temp_merged_paths_file.json temp_paths_traffic.json
+          cat "$paths_file"
+      - name: Fetch referrers data
+        run: |
+          referrers_file="$GITHUB_WORKSPACE/traffic/referrers.json"
+          github_api_url="https://api.github.com/repos/${{ github.repository }}/traffic/popular/referrers"
+          github_token="${{ secrets.TRAFFIC_API }}"
+
+          traffic_content=$(curl --request GET \
+                              --url "$github_api_url" \
+                              --header "X-GitHub-Api-Version:2022-11-28" \
+                              --header "authorization: Bearer $github_token" \
+                              --header 'content-type: application/json')
+          
+          echo "$traffic_content" > referrers_traffic_response.json
+          current_date=$(date +"%Y-%m-%d")
+          jq --arg request_date "$current_date" '.[] |= . + {request_date: $request_date}' referrers_traffic_response.json > temp_referrers_traffic_response.json && rm referrers_traffic_response.json
+          jq 'group_by(.referrer) | map({ referrer: .[0].referrer, views: map({count, uniques, request_date}) })' temp_referrers_traffic_response.json > temp_referrers_traffic.json && rm temp_referrers_traffic_response.json
+          cat temp_referrers_traffic.json
+          jq -s 'flatten | group_by(.referrer) | map({referrer: .[0].referrer, views: [.[].views[]] | unique_by(.request_date) | group_by(.request_date) | map(add)}) | unique_by(.referrer)' "$referrers_file" temp_referrers_traffic.json > temp_merged_referrers_file.json
+          cat temp_merged_referrers_file.json > "$referrers_file" && rm temp_merged_referrers_file.json temp_referrers_traffic.json
+          cat "$referrers_file"
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          author_name: GitHub Actions bot
+          author_email: ${{ vars.CI_EMAIL }}
+          message: Update traffic data
+      - name: Create Pull Request
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.TRAFFIC_API }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
+            -d '{"title":"Update traffic data","head":"schedule-traffic-workflow","base":"trimAl"}'
+

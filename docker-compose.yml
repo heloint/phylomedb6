@@ -1,0 +1,75 @@
+services:
+  phylomedb6-apache2-proxy:
+    build:
+      context: ./apache2-proxy
+    tty: true
+    ports:
+      - 3050:80
+    container_name: phylomedb6-apache2-proxy
+    networks:
+      - phylomedb6-network
+
+  phylomedb6-webapp:
+    build:
+      context: ./phylomedb6-webapp
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${NODE_ENV}
+    tty: true
+    volumes:
+      - ./phylomedb6-webapp:/phylomedb6-webapp
+    container_name: phylomedb6-webapp
+    networks:
+      - phylomedb6-network
+
+  phylomedb6-phylo-data-services:
+    build:
+      context: ./phylo-data-services
+    tty: true
+    stdin_open: true
+    environment:
+      CLUSTER_HOST: ${CLUSTER_HOST}
+      CLUSTER_USER: ${CLUSTER_USER}
+      CLUSTER_PASS: ${CLUSTER_PASS}
+      CLUSTER_BLAST_DB_PATH: ${CLUSTER_BLAST_DB_PATH}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      PHYLO_EXPLORER_SQLITE_DB_PATH: ${PHYLO_EXPLORER_SQLITE_DB_PATH}
+    volumes:
+      - ./phylo-data-services/app:/app
+    container_name: phylomedb6-phylo-data-services
+    networks:
+      - phylomedb6-network
+
+  phylomedb6-db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: test
+    profiles:
+      - with_database
+    command: [ "--max_allowed_packet=1073741824", "--max_connections=400" ]
+    volumes:
+      - ./development-database:/tmp/development-data
+      - ./development-database:/docker-entrypoint-initdb.d
+      - ./development-database/database-persistence:/var/lib/mysql
+    ports:
+      - 5000:3306
+    container_name: phylomedb6-db
+    networks:
+      - phylomedb6-network
+
+networks:
+  phylomedb6-network:
+    driver: bridge
+
+volumes:
+  node_modules:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./phylomedb6-webapp/node_modules

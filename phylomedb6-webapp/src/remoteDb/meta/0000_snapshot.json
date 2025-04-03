@@ -1,0 +1,1172 @@
+{
+    "id": "00000000-0000-0000-0000-000000000000",
+    "prevId": "",
+    "version": "5",
+    "dialect": "mysql",
+    "tables": {
+        "alignments": {
+            "name": "alignments",
+            "columns": {
+                "alignment_md5_id": {
+                    "autoincrement": false,
+                    "name": "alignment_md5_id",
+                    "type": "char(32)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "alignment": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "alignment",
+                    "type": "mediumblob",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "sha256sum": {
+                    "autoincrement": false,
+                    "name": "sha256sum",
+                    "type": "longtext",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "seqs_numb": {
+                    "autoincrement": false,
+                    "name": "seqs_numb",
+                    "type": "int(6)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "residues_numb": {
+                    "autoincrement": false,
+                    "name": "residues_numb",
+                    "type": "int(6)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "alignment_type": {
+                    "default": "''raw''",
+                    "autoincrement": false,
+                    "name": "alignment_type",
+                    "type": "enum('raw','clean','other')",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {
+                "sha256sum": {
+                    "name": "sha256sum",
+                    "columns": ["sha256sum"]
+                }
+            }
+        },
+        "alignment_relations": {
+            "name": "alignment_relations",
+            "columns": {
+                "alignment_md5_id": {
+                    "autoincrement": false,
+                    "name": "alignment_md5_id",
+                    "type": "char(32)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "phylome_id": {
+                    "autoincrement": false,
+                    "name": "phylome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "seed_protein_id": {
+                    "autoincrement": false,
+                    "name": "seed_protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "phylome_id": {
+                    "name": "phylome_id",
+                    "columns": ["phylome_id"],
+                    "isUnique": false
+                },
+                "seed_protein_id": {
+                    "name": "seed_protein_id",
+                    "columns": ["seed_protein_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "alignment_relations_ibfk_1": {
+                    "name": "alignment_relations_ibfk_1",
+                    "tableFrom": "alignment_relations",
+                    "tableTo": "alignments",
+                    "columnsFrom": ["alignment_md5_id"],
+                    "columnsTo": ["alignment_md5_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                },
+                "alignment_relations_ibfk_2": {
+                    "name": "alignment_relations_ibfk_2",
+                    "tableFrom": "alignment_relations",
+                    "tableTo": "phylomes",
+                    "columnsFrom": ["phylome_id"],
+                    "columnsTo": ["phylome_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                },
+                "alignment_relations_ibfk_3": {
+                    "name": "alignment_relations_ibfk_3",
+                    "tableFrom": "alignment_relations",
+                    "tableTo": "proteins",
+                    "columnsFrom": ["seed_protein_id"],
+                    "columnsTo": ["protein_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "fake_taxid_seq": {
+            "name": "fake_taxid_seq",
+            "columns": {
+                "next_not_cached_value": {
+                    "autoincrement": false,
+                    "name": "next_not_cached_value",
+                    "type": "bigint(21)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "minimum_value": {
+                    "autoincrement": false,
+                    "name": "minimum_value",
+                    "type": "bigint(21)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "maximum_value": {
+                    "autoincrement": false,
+                    "name": "maximum_value",
+                    "type": "bigint(21)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "start_value": {
+                    "autoincrement": false,
+                    "name": "start_value",
+                    "type": "bigint(21)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "increment": {
+                    "autoincrement": false,
+                    "name": "increment",
+                    "type": "bigint(21)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "cache_size": {
+                    "autoincrement": false,
+                    "name": "cache_size",
+                    "type": "bigint(21) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "cycle_option": {
+                    "autoincrement": false,
+                    "name": "cycle_option",
+                    "type": "tinyint",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "cycle_count": {
+                    "autoincrement": false,
+                    "name": "cycle_count",
+                    "type": "bigint(21)",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {}
+        },
+        "genes": {
+            "name": "genes",
+            "columns": {
+                "gene_id": {
+                    "autoincrement": true,
+                    "name": "gene_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "external_gene_id": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "external_gene_id",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "contig_id": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "contig_id",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "gene_name": {
+                    "autoincrement": false,
+                    "name": "gene_name",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "source": {
+                    "autoincrement": false,
+                    "name": "source",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "start": {
+                    "autoincrement": false,
+                    "name": "start",
+                    "type": "int(25)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "end": {
+                    "autoincrement": false,
+                    "name": "end",
+                    "type": "int(25)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "strand": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "strand",
+                    "type": "enum('+','-')",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "genome_id": {
+                    "autoincrement": false,
+                    "name": "genome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "genome_id": {
+                    "name": "genome_id",
+                    "columns": ["genome_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "genes_ibfk_1": {
+                    "name": "genes_ibfk_1",
+                    "tableFrom": "genes",
+                    "tableTo": "genomes",
+                    "columnsFrom": ["genome_id"],
+                    "columnsTo": ["genome_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "genomes": {
+            "name": "genomes",
+            "columns": {
+                "genome_id": {
+                    "autoincrement": true,
+                    "name": "genome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "external_genome_id": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "external_genome_id",
+                    "type": "varchar(50)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "taxid": {
+                    "autoincrement": false,
+                    "name": "taxid",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "version": {
+                    "autoincrement": false,
+                    "name": "version",
+                    "type": "int(10) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "source": {
+                    "autoincrement": false,
+                    "name": "source",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "uploaded_by": {
+                    "autoincrement": false,
+                    "name": "uploaded_by",
+                    "type": "varchar(20)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "comments": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "comments",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "taxid": {
+                    "name": "taxid",
+                    "columns": ["taxid"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "genomes_ibfk_1": {
+                    "name": "genomes_ibfk_1",
+                    "tableFrom": "genomes",
+                    "tableTo": "species",
+                    "columnsFrom": ["taxid"],
+                    "columnsTo": ["taxid"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "isoforms": {
+            "name": "isoforms",
+            "columns": {
+                "sequence_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "sequence_id",
+                    "type": "int(30) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "protein_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "external_protein_id": {
+                    "autoincrement": false,
+                    "name": "external_protein_id",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "description": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "description",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "gene_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "gene_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "protein_sequence_timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "protein_sequence_timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "sequence": {
+                    "autoincrement": false,
+                    "name": "sequence",
+                    "type": "longtext",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "genome_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "genome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "source": {
+                    "autoincrement": false,
+                    "name": "source",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "genome_timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "genome_timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "taxid": {
+                    "autoincrement": false,
+                    "name": "taxid",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "version": {
+                    "autoincrement": false,
+                    "name": "version",
+                    "type": "int(10) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "name": {
+                    "autoincrement": false,
+                    "name": "name",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {}
+        },
+        "longest_isoforms": {
+            "name": "longest_isoforms",
+            "columns": {
+                "sequence_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "sequence_id",
+                    "type": "int(30) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "protein_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "external_protein_id": {
+                    "autoincrement": false,
+                    "name": "external_protein_id",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "description": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "description",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "gene_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "gene_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "protein_sequence_timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "protein_sequence_timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "sequence": {
+                    "autoincrement": false,
+                    "name": "sequence",
+                    "type": "longtext",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "genome_id": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "genome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "source": {
+                    "autoincrement": false,
+                    "name": "source",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "genome_timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "genome_timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "taxid": {
+                    "autoincrement": false,
+                    "name": "taxid",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "version": {
+                    "autoincrement": false,
+                    "name": "version",
+                    "type": "int(10) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "name": {
+                    "autoincrement": false,
+                    "name": "name",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "longest_isoform_length": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "longest_isoform_length",
+                    "type": "bigint(10)",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {}
+        },
+        "phylomes": {
+            "name": "phylomes",
+            "columns": {
+                "phylome_id": {
+                    "autoincrement": true,
+                    "name": "phylome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "seed_genome_id": {
+                    "autoincrement": false,
+                    "name": "seed_genome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "name": {
+                    "autoincrement": false,
+                    "name": "name",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "description": {
+                    "autoincrement": false,
+                    "name": "description",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "comments": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "comments",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "responsible": {
+                    "autoincrement": false,
+                    "name": "responsible",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "modification_time": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "modification_time",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "spe2ages_id": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "spe2ages_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "is_public": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "is_public",
+                    "type": "tinyint",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "pubmed_link": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "pubmed_link",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "pubmed_title": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "pubmed_title",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "spe2ages_id": {
+                    "name": "spe2ages_id",
+                    "columns": ["spe2ages_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "phylomes_ibfk_1": {
+                    "name": "phylomes_ibfk_1",
+                    "tableFrom": "phylomes",
+                    "tableTo": "spe2ages_jsons",
+                    "columnsFrom": ["spe2ages_id"],
+                    "columnsTo": ["spe2ages_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {
+                "name": {
+                    "name": "name",
+                    "columns": ["name"]
+                }
+            }
+        },
+        "phylome_contents": {
+            "name": "phylome_contents",
+            "columns": {
+                "phylome_id": {
+                    "autoincrement": false,
+                    "name": "phylome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "genome_id": {
+                    "autoincrement": false,
+                    "name": "genome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "genome_id": {
+                    "name": "genome_id",
+                    "columns": ["genome_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "phylome_contents_ibfk_1": {
+                    "name": "phylome_contents_ibfk_1",
+                    "tableFrom": "phylome_contents",
+                    "tableTo": "phylomes",
+                    "columnsFrom": ["phylome_id"],
+                    "columnsTo": ["phylome_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                },
+                "phylome_contents_ibfk_2": {
+                    "name": "phylome_contents_ibfk_2",
+                    "tableFrom": "phylome_contents",
+                    "tableTo": "genomes",
+                    "columnsFrom": ["genome_id"],
+                    "columnsTo": ["genome_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "proteins": {
+            "name": "proteins",
+            "columns": {
+                "protein_id": {
+                    "autoincrement": true,
+                    "name": "protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "external_protein_id": {
+                    "autoincrement": false,
+                    "name": "external_protein_id",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "description": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "description",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "gene_id": {
+                    "autoincrement": false,
+                    "name": "gene_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "gene_id": {
+                    "name": "gene_id",
+                    "columns": ["gene_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "proteins_ibfk_1": {
+                    "name": "proteins_ibfk_1",
+                    "tableFrom": "proteins",
+                    "tableTo": "genes",
+                    "columnsFrom": ["gene_id"],
+                    "columnsTo": ["gene_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "protein_sequences": {
+            "name": "protein_sequences",
+            "columns": {
+                "sequence_id": {
+                    "autoincrement": true,
+                    "name": "sequence_id",
+                    "type": "int(30) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "sequence": {
+                    "autoincrement": false,
+                    "name": "sequence",
+                    "type": "longtext",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "sha256sum": {
+                    "default": "'NULL'",
+                    "autoincrement": false,
+                    "name": "sha256sum",
+                    "type": "longtext",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "timestamp": {
+                    "default": "'current_timestamp()'",
+                    "autoincrement": false,
+                    "name": "timestamp",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "protein_id": {
+                    "autoincrement": false,
+                    "name": "protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "protein_id": {
+                    "name": "protein_id",
+                    "columns": ["protein_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "protein_sequences_ibfk_1": {
+                    "name": "protein_sequences_ibfk_1",
+                    "tableFrom": "protein_sequences",
+                    "tableTo": "proteins",
+                    "columnsFrom": ["protein_id"],
+                    "columnsTo": ["protein_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {
+                "sha256sum": {
+                    "name": "sha256sum",
+                    "columns": ["sha256sum"]
+                }
+            }
+        },
+        "spe2ages_jsons": {
+            "name": "spe2ages_jsons",
+            "columns": {
+                "spe2ages_id": {
+                    "autoincrement": true,
+                    "name": "spe2ages_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "json_content": {
+                    "autoincrement": false,
+                    "name": "json_content",
+                    "type": "longtext",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {
+                "json_content": {
+                    "name": "json_content",
+                    "columns": ["json_content"]
+                }
+            }
+        },
+        "species": {
+            "name": "species",
+            "columns": {
+                "taxid": {
+                    "default": "'nextval(`phylomedb6`.`fake_taxid_seq`)'",
+                    "autoincrement": false,
+                    "name": "taxid",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "name": {
+                    "autoincrement": false,
+                    "name": "name",
+                    "type": "varchar(500)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "has_fake_taxid": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "has_fake_taxid",
+                    "type": "tinyint",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {
+                "name": {
+                    "name": "name",
+                    "columns": ["name"]
+                }
+            }
+        },
+        "trees": {
+            "name": "trees",
+            "columns": {
+                "tree_id": {
+                    "autoincrement": true,
+                    "name": "tree_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "phylome_id": {
+                    "autoincrement": false,
+                    "name": "phylome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "seed_protein_id": {
+                    "autoincrement": false,
+                    "name": "seed_protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "method": {
+                    "autoincrement": false,
+                    "name": "method",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "lk": {
+                    "default": 0,
+                    "autoincrement": false,
+                    "name": "lk",
+                    "type": "float",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "newick": {
+                    "autoincrement": false,
+                    "name": "newick",
+                    "type": "longtext",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "phylome_id": {
+                    "name": "phylome_id",
+                    "columns": ["phylome_id"],
+                    "isUnique": false
+                },
+                "seed_protein_id": {
+                    "name": "seed_protein_id",
+                    "columns": ["seed_protein_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "trees_ibfk_1": {
+                    "name": "trees_ibfk_1",
+                    "tableFrom": "trees",
+                    "tableTo": "phylomes",
+                    "columnsFrom": ["phylome_id"],
+                    "columnsTo": ["phylome_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                },
+                "trees_ibfk_2": {
+                    "name": "trees_ibfk_2",
+                    "tableFrom": "trees",
+                    "tableTo": "proteins",
+                    "columnsFrom": ["seed_protein_id"],
+                    "columnsTo": ["protein_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "tree_contents": {
+            "name": "tree_contents",
+            "columns": {
+                "phylome_id": {
+                    "autoincrement": false,
+                    "name": "phylome_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "seed_protein_id": {
+                    "autoincrement": false,
+                    "name": "seed_protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "target_protein_id": {
+                    "autoincrement": false,
+                    "name": "target_protein_id",
+                    "type": "int(20) unsigned",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {
+                "phylome_id_seed_protein_id_target_protein_id_idx": {
+                    "name": "phylome_id_seed_protein_id_target_protein_id_idx",
+                    "columns": [
+                        "phylome_id",
+                        "seed_protein_id",
+                        "target_protein_id"
+                    ],
+                    "isUnique": false
+                },
+                "seed_protein_id": {
+                    "name": "seed_protein_id",
+                    "columns": ["seed_protein_id"],
+                    "isUnique": false
+                },
+                "target_protein_id": {
+                    "name": "target_protein_id",
+                    "columns": ["target_protein_id"],
+                    "isUnique": false
+                }
+            },
+            "foreignKeys": {
+                "tree_contents_ibfk_1": {
+                    "name": "tree_contents_ibfk_1",
+                    "tableFrom": "tree_contents",
+                    "tableTo": "phylomes",
+                    "columnsFrom": ["phylome_id"],
+                    "columnsTo": ["phylome_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                },
+                "tree_contents_ibfk_2": {
+                    "name": "tree_contents_ibfk_2",
+                    "tableFrom": "tree_contents",
+                    "tableTo": "proteins",
+                    "columnsFrom": ["seed_protein_id"],
+                    "columnsTo": ["protein_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                },
+                "tree_contents_ibfk_3": {
+                    "name": "tree_contents_ibfk_3",
+                    "tableFrom": "tree_contents",
+                    "tableTo": "proteins",
+                    "columnsFrom": ["target_protein_id"],
+                    "columnsTo": ["protein_id"],
+                    "onDelete": "restrict",
+                    "onUpdate": "cascade"
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "uniprot_id_mappings": {
+            "name": "uniprot_id_mappings",
+            "columns": {
+                "uniprotkb_ac_id": {
+                    "autoincrement": false,
+                    "name": "uniprotkb_ac_id",
+                    "type": "varchar(50)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "id_type": {
+                    "autoincrement": false,
+                    "name": "id_type",
+                    "type": "varchar(50)",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "external_gene_id": {
+                    "autoincrement": false,
+                    "name": "external_gene_id",
+                    "type": "varchar(200)",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "compositePrimaryKeys": {},
+            "indexes": {},
+            "foreignKeys": {},
+            "uniqueConstraints": {
+                "external_gene_id": {
+                    "name": "external_gene_id",
+                    "columns": ["external_gene_id"]
+                }
+            }
+        }
+    },
+    "_meta": {
+        "schemas": {},
+        "tables": {},
+        "columns": {}
+    },
+    "internal": {
+        "tables": {},
+        "indexes": {}
+    }
+}

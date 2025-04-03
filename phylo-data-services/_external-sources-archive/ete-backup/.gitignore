@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.c
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Sphinx documentation
+doc/_build/
+
+# Test files
+test.png
+test.pdf
+test.svg
+
+# MacOSX
+.DS_Store

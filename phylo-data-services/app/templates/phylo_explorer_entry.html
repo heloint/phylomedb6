@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhylomeDB6 - Phylo Explorer</title>
+    
+    <!-- Preload CSS to accelerate availability -->
+    <link rel="preload" href="/static/css/phylo_explorer.style.css" as="style">
+    
+    <!-- Critical inline CSS for first render -->
+    <style>
+        /* Critical styles to prevent FOUC */
+        body {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #heatmapExplorer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            height: 100vh;
+            padding-top: 20px;
+        }
+        #loadingGIF {
+            margin: auto;
+            width: 12rem;
+        }
+        .matrixInputWrapper {
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.45);
+            position: relative;
+            width: 60%;
+            padding: 15px;
+        }
+        .matrixRadio-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+        .pre-search-button {
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        /* Fullscreen loader for initial loading time */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        /* Fade-in animation for elements */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+
+        /* Different timing for multiple elements */
+        .fade-in:nth-child(1) { animation-delay: 0.2s; }
+        .fade-in:nth-child(2) { animation-delay: 0.6s; }
+        .fade-in:nth-child(3) { animation-delay: 1.0s; }
+        .fade-in:nth-child(4) { animation-delay: 1.4s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+    
+    <!-- Load main CSS as early as possible -->
+    <link rel="stylesheet" type="text/css" href="/static/css/phylo_explorer.style.css">
+</head>
+
+<body>
+    <!-- Full page loader -->
+    <div class="page-loader">
+        <img src="/static/images/color-bar.gif" alt="Loading..." width="120">
+    </div>
+
+    <!-- PHYLO EXPLORER -->
+    <!-- =========================================== -->
+    <div id="heatmapExplorer" class="fadeIn">
+        <div style="width: 100%; display: flex; align-items: center; justify-content: center">
+            <img id="loadingGIF" src="/static/images/color-bar.gif" alt="loading.gif" />
+        </div>
+
+        <div class="error-message-container">
+            <p style="text-align: center; color: #8B0000;"><sup>*</sup>
+            </p>
+        </div>
+
+        <div class="heatmap-init-info fadeIn">
+
+            <h1 style="text-align: center">
+                <u>Phylo Explorer</u>
+            </h1>
+            <p style="text-align: left;">
+                Phylo Explorer allows you to better decide which phylome suits your
+                need in a user friendly, visual way.
+            </p>
+            <p style="text-align: left;">Browse phylomes interactively by including combinations of species.</p>
+            <p style="text-align: left;">For more information visit/check the <a style="color: #6495ED;"
+                    href="/help?title=Phylo Explorer" target="_blank" data-cy="manual-button">MANUAL</a>.</p>
+        </div>
+
+        <div class="matrixInput">
+            <div class="matrixInputWrapper">
+                <div class="matrixRadio-container">
+                    <div>
+                        <label for="top100Phy">Top 100 phylomes</label>
+                        <input class="pre-search-range-filter" type="radio" name="pre-search-range-filter"
+                            value="top100Phy" checked="checked">
+                    </div>
+
+                    <div>
+                        <label for="allPhy">All phylomes</label>
+                        <input class="pre-search-range-filter" type="radio" name="pre-search-range-filter"
+                            value="allPhy">
+                    </div>
+                </div>
+
+                <label id="matrixSearch-label" for="matrixSearch">* Search by taxonomy ID or taxonomy name.</label><br>
+                <div class="matrixSearch-container">
+                    <input id="matrixSearch" type="text" name="search" placeholder="Type to search" data-cy="search-taxid-input"
+                        autocomplete="chrome-off">
+                </div>
+
+                <div class="results" tabindex="0">
+                    <ul>
+                    </ul>
+                </div>
+            </div>
+            <div class="inputCollectorWrapper">
+                <u> Selected species:</u>
+                <div class="inputCollector">
+                    <ul>
+                        
+                    </ul>
+                    
+                </div>
+                
+                <div class="centerButton">
+                    <button class="pre-search-button" type="button" id="includeButton" data-cy="include-button">Include</button>
+                    <button class="pre-search-button clearButton" type="button" data-cy="clear-button">Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="heatmap-search-wrapper">
+            <div id="d3tooltip">
+                <p><span id="value"></p>
+            </div>
+        </div>
+        <!-- =========================================== -->
+    </div>
+    <!-- END: PHYLO EXPLORER  -->
+    
+    <!-- Control script for style management -->
+    <script>
+        // Control style loading and make content visible properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // References to important elements
+            const pageLoader = document.querySelector('.page-loader');
+            const body = document.body;
+            const styleSheet = document.querySelector('link[rel="stylesheet"]');
+            
+            // Check if main styles are already loaded
+            if (styleSheet.sheet) {
+                // Styles already loaded, make content visible
+                revealContent();
+            } else {
+                // Wait for styles to load
+                styleSheet.addEventListener('load', revealContent);
+                
+                // Fallback in case detection fails
+                setTimeout(revealContent, 1000);
+            }
+            
+            // Notify parent page that we're loaded (if we're in an iframe)
+            if (window.parent !== window) {
+                window.addEventListener('load', function() {
+                    setTimeout(function() {
+                        window.parent.postMessage({
+                            type: 'IFRAME_STYLES_LOADED',
+                            status: 'complete'
+                        }, '*');
+                    }, 100);
+                });
+            }
+            
+            function revealContent() {
+                // Make body of the page visible
+                body.style.opacity = '1';
+                
+                // Hide full page loader
+                if (pageLoader) {
+                    pageLoader.style.opacity = '0';
+                    setTimeout(function() {
+                        pageLoader.style.display = 'none';
+                    }, 300);
+                }
+            }
+        });
+        
+        // Safety fallback, if everything fails show content after 3 seconds
+        setTimeout(function() {
+            document.body.style.opacity = '1';
+            const pageLoader = document.querySelector('.page-loader');
+            if (pageLoader) pageLoader.style.display = 'none';
+        }, 3000);
+    </script>
+    
+    <!-- Load scripts -->
+    <script type="text/javascript" src="/static/js/phylo_explorer/dependencies/d3_v_3_5_16.js"></script>
+    <script type="text/javascript" src="/static/js/phylo_explorer/components/heatmap_buttons.js"></script>
+    <script type="text/javascript" src="/static/js/phylo_explorer/components/heatmap_filter_bar.js"></script>
+    <script type="text/javascript" src="/static/js/phylo_explorer/components/drag_to_scroll.js"></script>
+    <script type="module" src="/static/js/phylo_explorer/phylo_explorer.js"></script>
+</body>
+
+</html>

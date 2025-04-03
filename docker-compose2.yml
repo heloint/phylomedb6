@@ -1,0 +1,28 @@
+services:
+  phylomedb6-db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: test
+    command: [ "--max_allowed_packet=1073741824", "--max_connections=400" ]
+    volumes:
+      - ./development-database:/tmp/development-data
+      - ./development-database:/docker-entrypoint-initdb.d
+      # - ./development-database/database-persistence:/var/lib/mysql
+    ports:
+      - 5000:3306
+    container_name: phylomedb6-db
+    networks:
+      - phylomedb6-network
+
+networks:
+  phylomedb6-network:
+    driver: bridge
+
+# volumes:
+#   node_modules:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: ./phylomedb6-webapp/node_modules

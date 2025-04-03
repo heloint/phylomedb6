@@ -1,0 +1,106 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.alignment-header-container {
+    position: relative;
+}
+
+.table-container {
+    width: 100%;
+    padding: 0.2rem 0;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+thead {
+    background-color: #5a6b7d; /* Lighter slate for header */
+    color: #fff;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* Hover effect on table rows */
+tbody tr:hover {
+    background-color: #e0e0e0;
+    transition: background-color 0.2s ease;
+}
+
+.alignment-container {
+    margin-top: 8rem;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+}
+
+/* Responsive styling for small screens */
+@media (max-width: 600px) {
+    th,
+    td {
+        display: block;
+        width: 100%;
+        text-align: left; /* Changed to left-aligned */
+        padding: 10px;
+    }
+
+    th {
+        text-align: left; /* Keep headers aligned to the left */
+    }
+
+    .alignment-container {
+        margin-top: 20rem;
+    }
+}
+
+.default-btn {
+    margin: 0.5rem;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    background-color: #4a90e2; /* Primary button color */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    letter-spacing: 0.5px;
+    outline: none;
+}
+
+/* Hover state */
+.default-btn:hover {
+    background-color: #357abd; /* Darker shade on hover */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); /* Increased shadow on hover */
+}
+
+/* Focus state */
+.default-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(70, 140, 205, 0.4); /* Focus ring effect */
+}
+
+/* Active state */
+.default-btn:active {
+    background-color: #2e6fa1; /* Even darker when pressed */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2); /* Slightly smaller shadow */
+}

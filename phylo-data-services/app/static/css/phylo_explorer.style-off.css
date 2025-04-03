@@ -1,0 +1,760 @@
+html {
+    overflow: auto;
+    height: fit-content;
+}
+
+#heatmapExplorer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    height: auto;
+    min-height: 100vh;
+    width: 100%;
+    padding: 1rem;
+}
+
+.error-message-container {
+    display: none;
+}
+
+.heatmap-search-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    height: 100%;
+    flex: 1;
+}
+
+#d3tooltip {
+    position: absolute;
+    width: 300px;
+    height: auto;
+    padding: 10px;
+    background-color: #fafafa;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    pointer-events: none;
+    opacity: 0;
+}
+
+#d3tooltip.hidden {
+    display: none;
+}
+
+#d3tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+rect.selection {
+    stroke: #333;
+    stroke-dasharray: 4px;
+    stroke-opacity: 0.5;
+    fill: transparent;
+}
+
+rect.cell-border {
+    stroke: #808080;
+    stroke-width: 0.3px;
+}
+
+rect.cell-selected {
+    stroke: rgb(51, 102, 153);
+    stroke-width: 0.5px;
+}
+
+rect.cell-hover {
+    stroke: #f00;
+    stroke-width: 0.8px;
+}
+
+text.mono {
+    font-size: 9pt;
+    font-family: courier;
+    fill: black;
+}
+
+@media (max-width: 768px) {
+    text.mono {
+        font-size: 7pt;
+    }
+}
+
+.rlink {
+    fill: none;
+    stroke: #686868;
+    stroke-width: 1.5px;
+}
+
+#loadingGIF {
+    margin: auto;
+    width: 12rem;
+}
+
+svg {
+    display: initial;
+    max-width: 100%;
+    height: auto;
+}
+
+#sendButton,
+#filterInput,
+#loadingGIF {
+    display: none;
+}
+
+.matrixInput {
+    width: 100%;
+}
+
+.matrixInputWrapper {
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.45);
+    position: relative;
+}
+
+@media (min-width: 640px) {
+    .matrixInputWrapper {
+        width: 95%;
+    }
+}
+
+@media (min-width: 768px) {
+    .matrixInputWrapper {
+        width: 90%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .matrixInputWrapper {
+        width: 80%;
+    }
+}
+
+@media (min-width: 1280px) {
+    .matrixInputWrapper {
+        width: 70%;
+    }
+}
+
+@media (min-width: 1536px) {
+    .matrixInputWrapper {
+        width: 60%;
+    }
+}
+
+.matrixSearch-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.45);
+}
+
+#matrixSearch {
+    border: none;
+    height: 34px;
+    border-radius: 5px;
+    padding: 0px 40px 0px 10px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    font-size: 16px;
+}
+
+#matrixSearch:focus {
+    outline: none;
+}
+
+#matrixSearch-label {
+    text-align: center;
+    display: block;
+}
+
+.addButton,
+.removeButton {
+    position: absolute;
+    border: none;
+    background: none;
+    right: 0;
+    height: 20px;
+    padding: 0;
+    width: 20px;
+    cursor: pointer;
+}
+
+.addButton:focus,
+#removeButton:focus {
+    outline: none;
+}
+
+.addButton i,
+#removeButton i {
+    width: 100%;
+    color: #6d7b98;
+    font-size: 22px;
+}
+
+.inputCollectorWrapper {
+    display: none;
+    margin: 0.8rem auto;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.15);
+    position: relative;
+    width: 100%;
+    max-width: 40rem;
+    padding: 0.5rem;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .inputCollectorWrapper {
+        max-width: 95%;
+    }
+}
+
+.inputCollector ul {
+    margin: 0;
+    padding: 0;
+    
+    
+}
+
+.inputCollector ul li {
+    position: relative;
+    list-style: none;
+    border-radius: 3px;
+    padding: 8px 12px;
+    transition: all 0.5s linear;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+text:hover {
+    fill: #fd0000; 
+    transition: background-color 0.3s ease;
+    font-weight:bold;
+
+}
+
+.inputCollector ul li:hover {
+    background-color: #dbdbdb; 
+    transition: background-color 0.3s ease;
+}
+
+.results {
+    padding: 0px;
+    overflow-y: auto;
+    max-height: 20rem;
+}
+
+.results ul {
+    margin: 0;
+    padding: 0;
+}
+
+.results ul li {
+    position: relative;
+    list-style: none;
+    border-radius: 3px;
+    opacity: 0;
+    display: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.show-suggestions .results ul li {
+    opacity: 1;
+    display: block;
+}
+
+.show-suggestions .results {
+    padding: 10px;
+}
+
+.results ul li:hover {
+    background: #ececec;
+}
+
+.active_search_item {
+    background: #ececec;
+}
+
+.separatorLine {
+    border-bottom: 1px solid #e2e2e2;
+}
+
+#fieldSeparator {
+    border: none;
+    height: 20px;
+    width: 90%;
+    margin-top: 0;
+    border-bottom: 1px solid #93a8a9;
+    box-shadow: 0 10px 10px -10px #333;
+    margin: -50px auto 10px;
+}
+
+.centerButton {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.pre-search-button {
+    background-color: #4caf50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .pre-search-button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+#matrixSearchplaceholder {
+    color: #404040;
+}
+
+.active_heatmap {
+    display: initial;
+}
+
+/* PANEL TABS */
+.heatmap-function-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.heatmap-buttons-container {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 0.5rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .heatmap-buttons-container {
+        justify-content: center;
+        gap: 0.5rem;
+    }
+}
+
+.panel {
+    height: 5rem;
+    width: 5rem;
+}
+
+@media (max-width: 768px) {
+    .panel {
+        height: 4rem;
+        width: 4rem;
+    }
+}
+
+.hidden_heatmap {
+    display: none;
+}
+
+.heatmap-tab {
+    padding: 0.5rem;
+    background: #93c572;
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 3px;
+    line-height: 1.15;
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+    .heatmap-tab {
+        font-size: 1.2rem;
+        padding: 0.4rem;
+    }
+}
+
+.active-tab-button {
+    background: #4d6a39;
+}
+
+#reset-initial-button,
+#sendButton,
+#expandButton {
+    padding: 0.4rem 0.9rem;
+}
+
+@media (max-width: 768px) {
+    #reset-initial-button,
+    #sendButton,
+    #expandButton {
+        padding: 0.3rem 0.7rem;
+        font-size: 0.9rem;
+    }
+}
+
+#reset-initial-button:hover,
+#sendButton:hover,
+#expandButton:hover,
+.heatmap-tab:hover,
+#heatmap-information-button:hover {
+    transition: all 0.1s ease;
+    box-shadow: 0 0 0 0 #fff, 0 0 0 3px #a4dad2;
+}
+
+#reset-initial-button,
+#sendButton,
+#expandButton,
+#heatmap-information-button {
+    outline: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 3px;
+    line-height: 1.15;
+    font-size: 1rem;
+}
+
+#heatmap-information-button {
+    position: relative;
+}
+
+/* SUBFILTER SUGGESTIONS AND SUBFILTER INPUT */
+.sub-filter,
+#sub-filter-label {
+    position: relative;
+    z-index: 10;
+    padding: 0 0 0 .5rem;
+}
+.filterCollector ul {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    gap: 0.5rem;
+    width: max-content; /* Take as much width as needed */
+    padding: 0;
+    margin: 0;
+}
+
+
+.sub-filter {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    
+}
+
+/* Filter collector main container styles */
+.filterCollectorWrapper {
+    position: relative;
+    width: 80%;
+    font-size: 16px;
+    /* Added to position scroll buttons at the ends */
+    overflow: hidden;
+    height: 100%;
+}
+
+.filterCollector ul li {
+    display: flex;
+    align-items: center;    
+    box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.15);
+    background: white;
+    padding: 7px 7px 7px 7px;
+    flex: 0 0 auto; /* Don't stretch items */
+    white-space: nowrap; /* Keep text in one line */
+    position: relative;
+    list-style: none;
+    border-radius: 3px;
+    font-size: 12px;    
+    gap: 5px ;
+}
+
+
+/* Content within filter items */
+.filterCollector ul li p {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: calc(100% - 1rem);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.filter-scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 25px;
+    height: 25px;
+    background: #4caf50;
+    border: none;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.filter-scroll-button:hover {
+    opacity: 1;
+}
+
+.filter-scroll-left {
+    left: 2px;
+}
+
+.filter-scroll-right {
+    right: 2px;
+}
+
+/* Hiding scroll buttons when not needed */
+.filter-scroll-button.hidden {
+    display: none;
+}
+
+.filterCollector,
+#sub-filter-input {
+    border: none;
+    outline: none;
+    border-radius: 5px;
+    width: 98%;
+    padding: 0 0 0 0.5rem;
+    height: 100%;
+}
+
+.filterCollector ul,
+.sub-filter-suggestions ul {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+
+.sub-filter-suggestions ul li {
+    position: relative;
+    list-style: none;
+    border-radius: 3px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    gap: 1rem;
+    
+    
+}
+
+
+.filterCollector {
+    padding: 0.2rem;
+    height: auto;
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping to force horizontal layout */
+    overflow-x: hidden; /* Enable horizontal scrolling */
+    overflow-y: hidden; /* Prevent vertical scrolling */
+    scrollbar-width: thin; /* Firefox scrollbar */
+    -ms-overflow-style: none; /* IE and Edge scrollbar */
+    scroll-behavior: smooth; /* Smooth scrolling */
+    position: relative; /* For positioning relative to container */
+    /* Add padding for scroll buttons */
+    width: fit-content;
+    
+    
+}
+
+/* Webkit (Chrome, Safari, Opera) */
+.filterCollector::-webkit-scrollbar,
+.filterCollector::-webkit-scrollbar-thumb,
+.filterCollector::-webkit-scrollbar-track,
+.filterCollector::-webkit-scrollbar-track-piece,
+.filterCollector::-webkit-scrollbar-corner,
+.filterCollector::-webkit-scrollbar-button {
+    width: 0 !important;
+    height: 0 !important;
+    background-color: transparent !important;
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+
+.sub-filter-input-container {
+    height: 30px;
+    display: flex;
+    align-items: baseline;
+    width: 100%;
+    max-width: 30rem;
+    padding: 0 5px 0 0;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.45);
+    margin: 8px 0;
+    
+   
+    
+    font-size: 1.2rem; 
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .sub-filter-input-container {
+        width: 100%;
+    }
+}
+
+.sub-filter-suggestions {
+    display: none;
+    position: absolute;
+    z-index: 10;
+    background: white;
+    width: fit-content;
+    max-width: 95%;
+    border-radius: 5px;
+    top: 3.8rem;
+    padding-right: 3px;
+    border-radius: 5px;
+    box-shadow: 0px 1px 5px 3px rgba(0, 0, 0, 0.15);
+    max-height: 35rem;
+    overflow-x: auto;
+}
+
+
+.show-suggestions {
+    opacity: 1;
+    display: block;
+}
+
+.sub-filter-suggestions ul li:hover {
+    background: #ececec;
+}
+
+.green-btn {
+    background-color: #4caf50;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    padding: 0.5rem 2rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .green-btn {
+        padding: 0.4rem 1.5rem;
+        font-size: 14px;
+    }
+}
+
+.hidden-filter-bar {
+    display: none;
+}
+
+.matrixRadio-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.matrixRadio-container div {
+    margin: 1rem 0;
+}
+
+.matrixRadio-container div label {
+    display: inline;
+}
+
+.heatmap-tab-buttons {
+    padding: 1rem;
+    margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+    .heatmap-tab-buttons {
+        margin: 0 15% 0 0;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .heatmap-function-buttons {
+        gap: 0.3rem;
+    }
+    
+    .heatmap-tab {
+        font-size: 1rem;
+        padding: 0.3rem;
+    }
+    
+    #reset-initial-button,
+    #sendButton,
+    #expandButton {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .pre-search-button {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+    
+    .sub-filter-input-container {
+        max-width: 100%;
+    }
+}
+
+.sub-filter-input-wrapper{
+    width: 100%;
+    min-width: 100px;
+    height: 100%;
+}
+
+@media (min-width: 1800px) {
+    .heatmap-search-wrapper {
+        width: 100%;
+        margin: 0 auto;
+        height: 100%;
+        
+    }
+    
+    .matrixInputWrapper {
+        width: 50%;
+    }
+}
+
+.heatmap-visualization-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
